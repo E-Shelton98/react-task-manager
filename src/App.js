@@ -2,6 +2,7 @@
 import React from 'react'
 import Header from './components/Header'
 import Tasks from './components/Tasks'
+import AddTask from './components/AddTask'
 
 //import useState
 import { useState } from 'react'
@@ -13,19 +14,19 @@ function App() {
       id: 1,
       text: 'Doctors Appointment',
       day: 'Feb 5th at 2:30pm',
-      reminder: 'high',
+      importance: 'high',
     },
     {
       id: 2,
       text: 'Meeting at School',
       day: 'Feb 6th at 1:30pm',
-      reminder: 'low',
+      importance: 'low',
     },
     {
       id: 3,
       text: 'Food Shopping',
       day: 'Feb 5th at 2:30pm',
-      reminder: 'medium',
+      importance: 'medium',
     },
   ])
 
@@ -34,16 +35,43 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
-  //toggle reminder
-  const toggleImportance = (id) => {
+  //set importance in severity
+  const setImportance = (id) => {
+    //set our importance array
     const importanceArray = ['low', 'medium', 'high']
-    
+    //get our task based on id
+    let task = tasks.filter((task) => task.id === id)
+    //get the position of the index for the current task importance.
+    let importanceIndex = importanceArray.indexOf(task[0].importance)
+    //if importanceIndex is === to 2
+    if (importanceIndex === 2) {
+      //set importanceIndex back to 0
+      importanceIndex = 0
+    }
+    //iterate importanceIndex
+    else {
+      importanceIndex += 1
+    }
+
+    //update tasks State
+    setTasks(
+      tasks.map((task) =>
+        task.id === id
+          ? { ...task, importance: importanceArray[importanceIndex] }
+          : task
+      )
+    )
   }
 
   return (
     <div className='container'>
       <Header />
-      {tasks.length > 0 ? <Tasks tasks={tasks} onDelete={deleteTask}/> : 'No Tasks Scheduled.'}
+      <AddTask/>
+      {tasks.length > 0 ? (
+        <Tasks tasks={tasks} onDelete={deleteTask} onToggle={setImportance} />
+      ) : (
+        'No Tasks Scheduled.'
+      )}
     </div>
   )
 }
